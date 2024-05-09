@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.2.final using JasperReports Library version 6.21.2-8434a0bd7c3bbc37cbf916f2968d35e4b165821a  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Factura" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5281fa57-c81b-480b-bb4a-ce3610dff0d3">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="170"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="825"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter"/>
+	<parameter name="ID_reserva" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT id_reserva AS ID, CONCAT (nombre_Usuario, ' ', apellido_Usuario) AS Cliente, nombre_Estado AS Estado, horario AS Horario, 
+	CONCAT(horas_reserva, ' Horas') AS Horas, distribucion, nombre_local AS 'Nombre del Local', direccion ,artista, 
+    distribucion, CONCAT('$ ', precio_base) AS Precio, nombre_Equipo AS Equipo, CONCAT('$', precio_total) AS Cover, CONCAT('$ ', (precio_base + precio_total)) AS Total,
+	CONCAT(capacidad, ' Personas') AS Capacidad
+	FROM Reserva RS 
+    INNER JOIN Locales LO ON RS.id_local = LO.id_Locales
+    LEFT JOIN Equipo EQ ON LO.id_equipo = EQ.id_Equipo
+    INNER JOIN Usuarios US ON RS.id_usuario = US.id_Usuario
+    INNER JOIN EstadoReserva ER ON RS.estado_reserva = ER.id_EstadoReserva
+    WHERE id_reserva = $P{ID_reserva}]]>
+	</queryString>
+	<field name="ID" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="id_reserva"/>
+		<property name="com.jaspersoft.studio.field.label" value="ID"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="reserva"/>
+	</field>
+	<field name="Cliente" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="Cliente"/>
+		<property name="com.jaspersoft.studio.field.label" value="Cliente"/>
+	</field>
+	<field name="Estado" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nombre_Estado"/>
+		<property name="com.jaspersoft.studio.field.label" value="Estado"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="estadoreserva"/>
+	</field>
+	<field name="Horario" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="horario"/>
+		<property name="com.jaspersoft.studio.field.label" value="Horario"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="reserva"/>
+	</field>
+	<field name="Horas" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="Horas"/>
+		<property name="com.jaspersoft.studio.field.label" value="Horas"/>
+	</field>
+	<field name="distribucion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="distribucion"/>
+		<property name="com.jaspersoft.studio.field.label" value="distribucion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="reserva"/>
+	</field>
+	<field name="Nombre del Local" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nombre_local"/>
+		<property name="com.jaspersoft.studio.field.label" value="Nombre del Local"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="locales"/>
+	</field>
+	<field name="direccion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="direccion"/>
+		<property name="com.jaspersoft.studio.field.label" value="direccion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="locales"/>
+	</field>
+	<field name="artista" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="artista"/>
+		<property name="com.jaspersoft.studio.field.label" value="artista"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="reserva"/>
+	</field>
+	<field name="COLUMN_10" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="distribucion"/>
+		<property name="com.jaspersoft.studio.field.label" value="distribucion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="reserva"/>
+	</field>
+	<field name="Precio" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="Precio"/>
+		<property name="com.jaspersoft.studio.field.label" value="Precio"/>
+	</field>
+	<field name="Equipo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nombre_Equipo"/>
+		<property name="com.jaspersoft.studio.field.label" value="Equipo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="equipo"/>
+	</field>
+	<field name="Cover" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="Cover"/>
+		<property name="com.jaspersoft.studio.field.label" value="Cover"/>
+	</field>
+	<field name="Total" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="Total"/>
+		<property name="com.jaspersoft.studio.field.label" value="Total"/>
+	</field>
+	<field name="Capacidad" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="Capacidad"/>
+		<property name="com.jaspersoft.studio.field.label" value="Capacidad"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="55" splitType="Stretch">
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="160" y="10" width="220" height="30" uuid="1f1673e8-67dd-4ec4-b0fc-ac980035cf22">
+					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+					<paragraph tabStopWidth="50"/>
+				</textElement>
+				<text><![CDATA[Factura de consumo final]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="42" splitType="Stretch">
+			<textField>
+				<reportElement x="130" y="10" width="100" height="20" uuid="d937d3c7-d39a-4cbe-a848-d39e9dca0032"/>
+				<textFieldExpression><![CDATA[$F{Cliente}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="30" y="10" width="100" height="20" uuid="c9eea77c-ec4f-4226-9164-96f06070837d">
+					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+					<paragraph tabStopWidth="50"/>
+				</textElement>
+				<text><![CDATA[Nombre del Cliente:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="330" y="10" width="30" height="20" uuid="b55f9aa5-760f-4444-8a6e-5fd93286b1ee">
+					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+					<paragraph tabStopWidth="50"/>
+				</textElement>
+				<text><![CDATA[Local:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="362" y="10" width="160" height="20" uuid="aaea5f2a-18b6-42fb-99cb-2c439d91f48a"/>
+				<textFieldExpression><![CDATA[$F{Nombre del Local}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="30" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="281" splitType="Stretch">
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="30" y="4" width="110" height="16" uuid="45c2b636-ebd7-44a5-bc32-3ef491f0e5b0">
+					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+					<paragraph tabStopWidth="50"/>
+				</textElement>
+				<text><![CDATA[Estado de la reserva:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="140" y="4" width="100" height="16" uuid="5e3479e2-0528-4896-babe-d56c8fcdb309">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="3b41418e-c1de-4c60-b847-e64aaafa6dc3"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{Estado}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="30" y="40" width="180" height="20" uuid="7f49578d-3e24-4e08-9c81-1162b7202c80">
+					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+					<paragraph tabStopWidth="50"/>
+				</textElement>
+				<text><![CDATA[Reservado por la cantidad de horas:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="30" y="78" width="40" height="20" uuid="1cb89257-78e2-47a9-9999-0dde0f07b5a4">
+					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+					<paragraph tabStopWidth="50"/>
+				</textElement>
+				<text><![CDATA[Horario:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="210" y="40" width="100" height="20" uuid="880d5265-9939-4a6b-9d66-e94c41498ff6">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="e5e439b0-ab4e-4f32-872e-aaa9bc284c94"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{Horas}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="74" y="78" width="100" height="20" uuid="66afd27c-e074-46ae-8a78-2334665b0406">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="54a2f992-1d98-43b6-8381-c4fbd758cc86"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{Horario}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="30" y="117" width="70" height="20" uuid="d242e2ec-929e-4bb3-b514-9f563dc998c7">
+					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+					<paragraph tabStopWidth="50"/>
+				</textElement>
+				<text><![CDATA[Distribución:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="100" y="117" width="100" height="20" uuid="b619a666-533b-4a02-9dad-c712ba930050">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="8a499770-14f8-4b6e-8aa9-c6db08610066"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{distribucion}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="30" y="156" width="40" height="20" uuid="1f6b2b6c-eb0a-460f-aa00-37aea88e5aad">
+					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+					<paragraph tabStopWidth="50"/>
+				</textElement>
+				<text><![CDATA[Artista:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="70" y="156" width="100" height="20" uuid="b3fbbf76-50c5-4084-b5ab-20f8208132c3">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="04632893-ef07-41db-bf6d-6ff922b503a4"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{artista}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="30" y="194" width="160" height="20" uuid="5579263b-669b-4be7-a610-e254f590dbea">
+					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+					<paragraph tabStopWidth="50"/>
+				</textElement>
+				<text><![CDATA[Capacidad de personas alojadas:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="190" y="194" width="100" height="20" uuid="844afebe-ae00-4c69-b1b3-8e3985269618">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="5ce49675-efd8-41f2-add7-94be07008c8d"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{Capacidad}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="30" y="234" width="140" height="20" uuid="9a4fa656-3c70-4fd5-8698-f08553f2dcab">
+					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+					<paragraph tabStopWidth="50"/>
+				</textElement>
+				<text><![CDATA[Equipo adicional contratado:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="174" y="234" width="100" height="20" uuid="a66fe156-7af5-4cbc-b24d-01cbd69b2a82">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6b97ed22-3b91-43a7-854b-35da0dc86bbe"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{Equipo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="56" splitType="Stretch">
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="30" y="13" width="107" height="20" uuid="ffc07f24-8cbf-4581-90c5-11ce0a4490e1">
+					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+					<paragraph tabStopWidth="50"/>
+				</textElement>
+				<text><![CDATA[Dirección del evento:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="137" y="13" width="392" height="37" uuid="ecd99752-3234-4dd4-b06f-95a4f60651b3"/>
+				<textFieldExpression><![CDATA[$F{direccion}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<textField>
+				<reportElement x="479" y="12" width="50" height="30" uuid="d88e5789-de20-400c-bf28-6cdbe308a777"/>
+				<textFieldExpression><![CDATA[$F{Total}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="397" y="12" width="80" height="30" uuid="611656c2-d13e-4ae4-bbdb-493b88a1d011">
+					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
+				</reportElement>
+				<textElement>
+					<paragraph tabStopWidth="50"/>
+				</textElement>
+				<text><![CDATA[Total a cancelar:]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="55" splitType="Stretch"/>
+	</summary>
+</jasperReport>
