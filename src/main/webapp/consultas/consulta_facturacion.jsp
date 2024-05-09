@@ -1,4 +1,9 @@
-<%--
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="net.sf.jasperreports.engine.design.JasperDesign" %>
+<%@ page import="net.sf.jasperreports.engine.xml.JRXmlLoader" %>
+<%@ page import="net.sf.jasperreports.engine.*" %>
+<%@ page import="net.sf.jasperreports.view.JasperViewer" %>        <%--
   Created by IntelliJ IDEA.
   User: nelson
   Date: 5/5/2024
@@ -8,6 +13,8 @@
 <%@ include file="/conexion.jsp" %>
 <div class="">
     <table class="table table-striped table-bordered table-hover text-center"> <thead>
+    <br>
+    <br>
     <tr>
         <th>Id</th>
         <th>Nombre cliente</th>
@@ -15,7 +22,6 @@
         <th>Estado</th>
         <th>Direccion</th>
         <th>Aritsta</th>
-        <th>Total</th>
         <th>Editar</th>
         <th>Eliminar</th>
         <th>Mas info</th>
@@ -23,18 +29,19 @@
     </thead>
         <tbody>
         <%
-            st = conexion.prepareStatement("SELECT id_reserva AS ID, CONCAT (nombre_Usuario, ' ', apellido_Usuario) AS Cliente, nombre_Estado AS Estado, horario AS Horario, \n" +
-                "\tCONCAT(horas_reserva, ' Horas') AS Horas, distribucion, nombre_local AS 'Nombre del Local', direccion ,artista, \n" +
-                "    distribucion, CONCAT('$ ', precio_base) AS Precio, nombre_Equipo AS Equipo, CONCAT('$', precio_total) AS Cover, CONCAT('$ ', (precio_base + precio_total)) AS Total,\n" +
-                "\tCONCAT(capacidad, ' Personas') AS Capacidad\n" +
-                "\tFROM Reserva RS \n" +
-                "    INNER JOIN Locales LO ON RS.id_local = LO.id_Locales\n" +
-                "    LEFT JOIN Equipo EQ ON LO.id_equipo = EQ.id_Equipo\n" +
-                "    INNER JOIN Usuarios US ON RS.id_usuario = US.id_Usuario\n" +
-                "    INNER JOIN EstadoReserva ER ON RS.estado_reserva = ER.id_EstadoReserva;");
-            rs = st.executeQuery( );
-            while (rs.next( )) {
-                int idLocal = rs.getInt("ID");
+            st = conexion.prepareStatement("SELECT id_reserva AS ID, CONCAT (nombre_Usuario, ' ', apellido_Usuario) AS Cliente, nombre_Estado AS Estado, horario AS Horario,\n" +
+                    "\t\tCONCAT(horas_reserva, ' Horas') AS Horas, distribucion, nombre_local AS 'Nombre del Local', direccion ,artista,\n" +
+                    "\t\tdistribucion, CONCAT('$ ', precio_base) AS Precio, nombre_Equipo AS Equipo,\n" +
+                    "\t\tCONCAT(capacidad, ' Personas') AS Capacidad\n" +
+                    "\t\tFROM Reserva RS\n" +
+                    "\t\tINNER JOIN Locales LO ON RS.id_local = LO.id_Locales\n" +
+                    "\t\tLEFT JOIN Equipo EQ ON LO.id_equipo = EQ.id_Equipo\n" +
+                    "\t\tINNER JOIN Usuarios US ON RS.id_usuario = US.id_Usuario\n" +
+                    "\t\tINNER JOIN EstadoReserva ER ON RS.estado_reserva = ER.id_EstadoReserva;");
+            rs = st.executeQuery();
+            int idLocal = 0;
+            while (rs.next()) {
+                idLocal = rs.getInt("ID");
         %>
         <tr>
             <td>
@@ -56,9 +63,6 @@
                 <%=rs.getString("artista")%>
             </td>
             <td>
-                <%=rs.getString("Total")%>
-            </td>
-            <td>
                 <button class="btn btn-warning" onclick="alerta('<%=rs.getInt("ID")%>')">
                     Editar
                 </button>
@@ -70,54 +74,136 @@
                 </button>
             </td>
             <td>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal<%= idLocal %>" data-id="<%= idLocal %>">
                     Expandir
-                    <% out.println(idLocal); %>
                 </button>
+                <%
+                    try {   stModal = conexion.prepareStatement("SELECT id_reserva AS ID, CONCAT (nombre_Usuario, ' ', apellido_Usuario) AS Cliente, nombre_Estado AS Estado, horario AS Horario,\n" +
+                            "\t\tCONCAT(horas_reserva, ' Horas') AS Horas, distribucion, nombre_local AS 'Nombre del Local', direccion ,artista,\n" +
+                            "\t\tdistribucion, CONCAT('$ ', precio_base) AS Precio, nombre_Equipo AS Equipo,\n" +
+                            "\t\tCONCAT(capacidad, ' Personas') AS Capacidad\n" +
+                            "\t\tFROM Reserva RS\n" +
+                            "\t\tINNER JOIN Locales LO ON RS.id_local = LO.id_Locales\n" +
+                            "\t\tLEFT JOIN Equipo EQ ON LO.id_equipo = EQ.id_Equipo\n" +
+                            "\t\tINNER JOIN Usuarios US ON RS.id_usuario = US.id_Usuario\n" +
+                            "\t\tINNER JOIN EstadoReserva ER ON RS.estado_reserva = ER.id_EstadoReserva\n" +
+                            "        WHERE id_reserva = ?;");
+                        stModal.setInt(1, idLocal);
+                    } catch (SQLException e) {
+                        System.out.println("Error at: " + e);
+                    }
+                    stModal.setInt(1, idLocal);
+                    rsModal = stModal.executeQuery();
+                    while (rsModal.next())
+                    {%>
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal<%= idLocal %>" tabindex="-1" aria-labelledby="exampleModal<%= idLocal %>" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Generacion de Factura para el consumidor: </h5>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-12 d-flex text-center">
+
+                                            <div class="col-md-6">
+                                            <span class="d-flex justify-content-around">
+                                                <h6 class="fw-bold text-center">ID: </h6>
+                                                <p class="text-center"><%= rsModal.getInt("ID") %></p>
+                                            </span>
+                                                <span class="d-flex justify-content-around">
+                                                <h6 class="fw-bold">Cliente: </h6> <p><%=rsModal.getString("Cliente")%></p>
+                                            </span>
+                                                <span class="d-flex justify-content-around">
+                                                <h6 class="fw-bold">Estado: </h6> <p><%=rsModal.getString("Estado")%></p>
+                                            </span>
+                                                <span class="d-flex justify-content-around">
+                                                <h6 class="fw-bold">Horario: </h6> <p><%=rsModal.getString("Horario")%></p>
+                                            </span>
+                                                <span class="d-flex justify-content-around">
+                                                <h6 class="fw-bold">Horas de renta: </h6> <p><%=rsModal.getString("Horas")%></p>
+                                            </span>
+                                                <span class="d-flex justify-content-around">
+                                                <h6 class="fw-bold">Nombre del local: </h6> <p><%=rsModal.getString("Nombre del Local")%></p>
+                                            </span>
+                                            </div>
+                                            <div class="col-md-6">
+                                            <span class="d-flex justify-content-around">
+                                                <h6 class="fw-bold text-center">Distribucion: </h6>
+                                                <p class="text-center"><%=rsModal.getString("distribucion")%></p>
+                                            </span>
+                                                <span class="d-flex justify-content-around">
+                                                <h6 class="fw-bold">Direccion: </h6> <p><%=rsModal.getString("direccion")%></p>
+                                            </span>
+                                                <span class="d-flex justify-content-around">
+                                                <h6 class="fw-bold">Artista: </h6> <p><%=rsModal.getString("artista")%></p>
+                                            </span>
+                                                <span class="d-flex justify-content-between">
+                                                <h6 class="fw-bold">Equipo: </h6> <p><%=rsModal.getString("Equipo")%></p>
+                                            </span>
+                                                <span class="d-flex justify-content-around">
+                                                <h6 class="fw-bold">Capacidad del Local: </h6> <p><%=rsModal.getString("Capacidad")%></p>
+                                            </span>
+                                                <span class="d-flex justify-content-around">
+                                                <h6 class="fw-bold">Monto a pagar: </h6></p>
+                                            </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                    <button type="button" class="btn btn-primary">
+                                        <%
+                                            try {
+                                                JasperDesign design = JRXmlLoader.load("/reports/Factura.jrxml");
+                                                JasperReport jasperReport = JasperCompileManager.compileReport(design);
+                                                JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, st.getConnection());
+                                                JasperViewer.viewReport(jasperPrint, false);
+                                            } catch (JRException ex) {
+                                                System.out.println("ERROR" +  ex);
+                                            } catch (SQLException e) {
+                                                System.out.println("sql ERROR: " + e);
+                                            }
+                                        %>
+                                        Generar factura
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        $(document).ready(function() {
+                            $('#exampleModal').on('show.bs.modal', function(event) {
+                                var button = $(event.relatedTarget);
+                                var idLocal = button.data('id');
+                                // Hacer una petición AJAX para obtener los datos correspondientes al ID del local
+                                $.ajax({
+                                    url: '/obtener-datos-local?id=' + idLocal,
+                                    method: 'GET',
+                                    success: function(response) {
+                                        // Actualizar el contenido del modal con los datos obtenidos
+                                        $('#exampleModal .modal-content').html(response);
+                                    },
+                                    error: function() {
+                                        console.log('Error al cargar los datos del local.');
+                                    }
+                                });
+                            });
+                        });
+                    </script>
+                    <%}%>
             </td>
         </tr>
-        <% } conexion.close( );%>
+        <% }
+            conexion.close();%>
         </tbody>
     </table>
 </div>
-
-<%
-    try {
-        stModal = conexion.prepareStatement("SELECT id_reserva AS ID, CONCAT (nombre_Usuario, ' ', apellido_Usuario) AS Cliente, nombre_Estado AS Estado, horario AS Horario, \n" +
-                "\tCONCAT(horas_reserva, ' Horas') AS Horas, distribucion, nombre_local AS 'Nombre del Local', direccion ,artista, \n" +
-                "    distribucion, CONCAT('$ ', precio_base) AS Precio, nombre_Equipo AS Equipo, CONCAT('$', precio_total) AS Cover, CONCAT('$ ', (precio_base + precio_total)) AS Total,\n" +
-                "\tCONCAT(capacidad, ' Personas') AS Capacidad\n" +
-                "\tFROM Reserva RS INNER JOIN Locales LO ON RS.id_local = LO.id_Locales\n" +
-                "    LEFT JOIN Equipo EQ ON LO.id_equipo = EQ.id_Equipo\n" +
-                "    INNER JOIN Usuarios US ON RS.id_usuario = US.id_Usuario\n" +
-                "    INNER JOIN EstadoReserva ER ON RS.estado_reserva = ER.id_EstadoReserva\n" +
-                "    WHERE id_reserva = ?");
-    } catch (SQLException e) { throw new RuntimeException(e); }
-    stModal.setInt(1, 1);
-    rsModal = stModal.executeQuery( );
-    while (rsModal.next()) { }
-%>
-
-<script>
-    $(document).ready(function() {
-        $('#exampleModal').on('show.bs.modal', function(event) {
-            var button = $(event.relatedTarget);
-            var idLocal = button.data('id');
-            // Hacer una petición AJAX para obtener los datos correspondientes al ID del local
-            $.ajax({
-                url: '/obtener-datos-local?id=' + idLocal,
-                method: 'GET',
-                success: function(response) {
-                    // Actualizar el contenido del modal con los datos obtenidos
-                    $('#exampleModal .modal-content').html(response);
-                },
-                error: function() {
-                    console.log('Error al cargar los datos del local.');
-                }
-            });
-        });
-    });
-</script>
 
 <script>
     function alerta(id) {

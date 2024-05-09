@@ -38,6 +38,8 @@
                 </div>
             </div>
 
+            <br>
+            <br>
             <div style="margin-left: 30%;">
                 <input type="submit" class="btn btn-success col-md-6 " value="Guardar">
             </div>

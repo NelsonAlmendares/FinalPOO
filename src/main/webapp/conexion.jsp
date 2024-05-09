@@ -3,7 +3,7 @@
 <%
     Connection conexion =null;
     //private Statement s =null;
-    ResultSet rs= null;
+    ResultSet rs = null;
     PreparedStatement st =null;
 
     ResultSet rsModal = null;

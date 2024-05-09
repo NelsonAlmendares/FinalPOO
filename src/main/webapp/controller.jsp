@@ -33,25 +33,34 @@
 
 <%
     String operacion = request.getParameter("operacion");
-    out.println(operacion);
     if (operacion.equals("salir")) {
         session_actual.setAttribute("USER", null);
         session_actual.setAttribute("NAME", null);
         response.sendRedirect("login.jsp");
     } else if (operacion.equals("logueo")) {
+
         String usuario = request.getParameter("usuario");
         String password = request.getParameter("password");
         try {
             st = conexion.prepareStatement(
-                    "select count(acceso_Usuario),nombre_Usuario from Usuarios where acceso_Usuario = ? and contrasena_Usuario=SHA2(?,256) ");
+                    "select count(acceso_Usuario),nombre_Usuario,tipo_Usuario from Usuarios where acceso_Usuario = ? and contrasena_Usuario=SHA2(?,256) ");
             st.setString(1, usuario);
             st.setString(2, password);
             rs = st.executeQuery( );
             rs.next( );
             if (rs.getInt(1) == 1) { //solo una coincidencia es permitida
+
+                // Seleccionamos el tipo de Usuario con el que se ha hecho el Login
+                int tipoUsuario = rs.getInt("tipo_Usuario");
+
+                // Asignamos los atributos apartir de la sesion
+                session.setAttribute("isLoggedIn", true);
+                session.setAttribute("tipoUsuario", tipoUsuario);
+
                 session_actual.setAttribute("USER", usuario);
                 session_actual.setAttribute("NAME", rs.getString(2));
                 response.sendRedirect("index.jsp");
+
             } else {
                 response.sendRedirect("login.jsp");
             }
@@ -63,37 +72,35 @@
     } else if (operacion.equals("insertar")) {
         String horario = request.getParameter("horario");
         int horas = Integer.parseInt(request.getParameter("horas"));
+        String inicio = request.getParameter("inicio");
+        String fin = request.getParameter("fin");
         String artista = request.getParameter("artista");
-        String distribucion = request.getParameter("distribucion");
-        Double total = Double.parseDouble(request.getParameter("total"));
+        int local = Integer.parseInt(request.getParameter("local"));
 
         try {
-            st = conexion.prepareStatement("INSERT INTO Reserva (horario, horas_reserva, artista, distribucion, precio_total, id_usuario, id_local) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            st = conexion.prepareStatement("INSERT INTO Reserva (horario, horas_reserva, hora_inicio , hora_fin, artista, estado_reserva, id_usuario, id_local)\n" +
+                    "\tVALUES (?, ?, ?, ?, ?, ?, ?, ?)");
             st.setString(1, horario);
             st.setInt(2, horas);
-            st.setString(3, artista);
-            st.setString(4, distribucion);
-            st.setDouble(5, total);
-
+            st.setString(3, inicio);
+            st.setString(4, fin);
+            st.setString(5, artista);
+            st.setDouble(6, 1);
             int get_user = 0;
-            if (rs.next()) {
-                get_user = rs.getInt("id_Usuario");
-            }
-            st.setInt(6, get_user);
+            if (rs.next()) { get_user = rs.getInt("id_Usuario");}
+            st.setInt(7, get_user);
             // Traemos el ID del local seleccionado
-            int local = (Integer.parseInt(request.getParameter("id")));
-            st.setInt(7, local);
+            st.setInt(8, local);
             st.executeUpdate();
-            response.sendRedirect("index.jsp?exito=si");
+            response.sendRedirect(request.getContextPath() + "/vistas/reserva.jsp?exito=si");
 
         } catch (SQLException e) {
             // Manejar la excepción de SQL
             e.printStackTrace(); // Imprimir la traza de la excepción para diagnóstico
-
         } catch (Exception e) {
             // Manejar otras excepciones
             e.printStackTrace(); // Imprimir la traza de la excepción para diagnóstico
-            response.sendRedirect("index.jsp?exito=no&error=" + e.getMessage()); // Redirigir a la página de inicio con un mensaje de error
+            response.sendRedirect("index.jsp?exito=no&error=" + e.getMessage());
         } finally {
             // Cerrar recursos
             try {
@@ -106,12 +113,12 @@
         }
 
     } else if (operacion.equals("modificar")) {
-        int id = Integer.parseInt(request.getParameter("id"));
         String horario = request.getParameter("horario");
         int horas = Integer.parseInt(request.getParameter("horas"));
+        String inicio = request.getParameter("inicio");
+        String fin = request.getParameter("fin");
         String artista = request.getParameter("artista");
-        String distribucion = request.getParameter("distribucion");
-        Double total = Double.parseDouble(request.getParameter("total"));
+        int local = Integer.parseInt(request.getParameter("local"));
 
         st = conexion.prepareStatement(
                 "UPDATE Reserva \n" +
@@ -124,17 +131,14 @@
         st.setString(1,horario);
         st.setInt(2, horas);
         st.setString(3, artista);
-        st.setString(4, distribucion);
-        st.setDouble(5, total);
-        st.setInt(6, id);
         st.executeUpdate( );
-        response.sendRedirect("index.jsp?exito=si");
+        response.sendRedirect(request.getContextPath() + "/vistas/reserva.jsp?exito=si");
     }else if (operacion.equals("eliminar")) {
         int id = Integer.parseInt(request.getParameter("id"));
         st = conexion.prepareStatement("DELETE FROM Reserva WHERE id_reserva = ? ");
         st.setInt(1, id);
         st.executeUpdate( );
-        response.sendRedirect("index.jsp?exito=si");
+        response.sendRedirect(request.getContextPath() + "/vistas/reserva.jsp?exito=si");
     }%>
 </body>
 </html>

@@ -24,7 +24,7 @@
         <tbody>
         <%  st = conexion.prepareStatement("SELECT id_Locales AS ID, nombre_local AS 'Nombre del Local', precio_base AS Precio, descripccion, disponibilidad, direccion, capacidad, nombre_Equipo AS Equipo\n" +
                 "\tFROM Locales LO\n" +
-                "    LEFT JOIN Equipo EQ ON LO.id_equipo = EQ.id_Equipo");
+                "  LEFT JOIN Equipo EQ ON LO.id_equipo = EQ.id_Equipo");
             rs = st.executeQuery( );
             while (rs.next( )) { %>
         <tr>

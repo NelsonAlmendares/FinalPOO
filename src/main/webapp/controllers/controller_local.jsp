@@ -11,24 +11,26 @@
 <%
     String operacion = request.getParameter("operacion");
     if (operacion.equals("insertar")) {
+
         String nombre = request.getParameter("nombre");
+        String distribucion = request.getParameter("distribucion");
         Double precio = Double.parseDouble(request.getParameter("precio"));
         String descripccion = request.getParameter("descripcion");
         String disponibilidad = request.getParameter("disponibilidad");
         String direccion = request.getParameter("direccion");
         int capacidad = Integer.parseInt(request.getParameter("capacidad"));
         int equipo = Integer.parseInt(request.getParameter("equipo"));
-
         try {
-            st = conexion.prepareStatement("INSERT INTO Locales (nombre_local, precio_base, descripccion, disponibilidad, direccion, capacidad, id_equipo) \n" +
-                    "\tVALUES (?, ?, ?, ?, ?, ?, ?)");
+            st = conexion.prepareStatement("INSERT INTO Locales (nombre_local, distribucion, precio_base, descripccion, disponibilidad, direccion, capacidad, id_equipo)\n" +
+                    "\tVALUES (?, ?, ?, ?, ?, ?, ?, ?);");
             st.setString(1, nombre);
-            st.setDouble(2, precio);
-            st.setString(3, descripccion);
-            st.setString(4, disponibilidad);
-            st.setString(5, direccion);
-            st.setInt(6, capacidad);
-            st.setInt(7, equipo);
+            st.setString(2, distribucion);
+            st.setDouble(3, precio);
+            st.setString(4, descripccion);
+            st.setString(5, disponibilidad);
+            st.setString(6, direccion);
+            st.setInt(7, capacidad);
+            st.setInt(8, equipo);
 
             st.executeUpdate();
             response.sendRedirect(request.getContextPath() + "/vistas/locales.jsp?exito=si");
@@ -45,6 +47,7 @@
     } else if (operacion.equals("modificar")) {
         int id = Integer.parseInt(request.getParameter("ID"));
         String nombre = request.getParameter("nombre");
+        String distribucion = request.getParameter("distribucion");
         Double precio = Double.parseDouble(request.getParameter("precio"));
         String descripccion = request.getParameter("descripcion");
         String disponibilidad = request.getParameter("disponibilidad");
@@ -52,17 +55,16 @@
         int capacidad = Integer.parseInt(request.getParameter("capacidad"));
         int equipo = Integer.parseInt(request.getParameter("equipo"));
 
-        st = conexion.prepareStatement("UPDATE Locales SET nombre_local = ?, precio_base = ?, descripccion = ?, \n" +
-                "\tdisponibilidad = ?, direccion = ?, capacidad = ?, id_equipo = ?\n" +
-                "\tWHERE id_Locales = ?");
+        st = conexion.prepareStatement("UPDATE Locales SET nombre_local = ?, distribucion = ?, precio_base = ?, descripccion = ?, disponibilidad = ?, direccion = ?, capacidad = ?, id_equipo = ? WHERE id_Locales = ?;");
         st.setString(1, nombre);
-        st.setDouble(2, precio);
-        st.setString(3, descripccion);
-        st.setString(4, disponibilidad);
-        st.setString(5, direccion);
-        st.setInt(6, capacidad);
-        st.setInt(7, equipo);
-        st.setInt(8, id);
+        st.setString(2, distribucion);
+        st.setDouble(3, precio);
+        st.setString(4, descripccion);
+        st.setString(5, disponibilidad);
+        st.setString(6, direccion);
+        st.setInt(7, capacidad);
+        st.setInt(8, equipo);
+        st.setInt(9, id);
         st.executeUpdate( );
         response.sendRedirect(request.getContextPath() + "/vistas/locales.jsp?exito=si");
     }

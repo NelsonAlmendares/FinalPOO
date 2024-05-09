@@ -7,15 +7,19 @@
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter"/>
 	<parameter name="ID_reserva" class="java.lang.String"/>
 	<queryString language="SQL">
-		<![CDATA[SELECT id_reserva AS ID, CONCAT (nombre_Usuario, ' ', apellido_Usuario) AS Cliente, nombre_Estado AS Estado, horario AS Horario, 
-	CONCAT(horas_reserva, ' Horas') AS Horas, distribucion, nombre_local AS 'Nombre del Local', direccion ,artista, 
-    distribucion, CONCAT('$ ', precio_base) AS Precio, nombre_Equipo AS Equipo, CONCAT('$', precio_total) AS Cover, CONCAT('$ ', (precio_base + precio_total)) AS Total,
-	CONCAT(capacidad, ' Personas') AS Capacidad
-	FROM Reserva RS 
-    INNER JOIN Locales LO ON RS.id_local = LO.id_Locales
-    LEFT JOIN Equipo EQ ON LO.id_equipo = EQ.id_Equipo
-    INNER JOIN Usuarios US ON RS.id_usuario = US.id_Usuario
-    INNER JOIN EstadoReserva ER ON RS.estado_reserva = ER.id_EstadoReserva
+		<![CDATA[SELECT id_reserva AS ID, CONCAT (nombre_Usuario, ' ', apellido_Usuario) AS Cliente, nombre_Estado AS Estado, horario AS Horario,
+		CONCAT(horas_reserva, ' Horas') AS Horas, distribucion, hora_inicio, hora_fin, nombre_local AS 'Nombre del Local', direccion ,artista,
+		distribucion, CONCAT('$ ', precio_base) AS Precio, nombre_Equipo AS Equipo,
+		CONCAT(capacidad, ' Personas') AS Capacidad, 
+        IF(hora_inicio <= '06:00:00', (precio_base * horas_reserva), IF(hora_fin >= '00:00:00', (precio_base * horas_reserva), 'Hola')) AS Total, 
+		IF(hora_fin < hora_inicio, 
+		   TIMESTAMPDIFF(HOUR, hora_inicio, hora_fin) + 24, 
+		   TIMESTAMPDIFF(HOUR, hora_inicio, hora_fin)) * 500 AS Pago_impuestos
+		FROM Reserva RS
+		INNER JOIN Locales LO ON RS.id_local = LO.id_Locales
+		LEFT JOIN Equipo EQ ON LO.id_equipo = EQ.id_Equipo
+		INNER JOIN Usuarios US ON RS.id_usuario = US.id_Usuario
+		INNER JOIN EstadoReserva ER ON RS.estado_reserva = ER.id_EstadoReserva
     WHERE id_reserva = $P{ID_reserva}]]>
 	</queryString>
 	<field name="ID" class="java.lang.Integer">
@@ -44,6 +48,16 @@
 	<field name="distribucion" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="distribucion"/>
 		<property name="com.jaspersoft.studio.field.label" value="distribucion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="locales"/>
+	</field>
+	<field name="hora_inicio" class="java.sql.Time">
+		<property name="com.jaspersoft.studio.field.name" value="hora_inicio"/>
+		<property name="com.jaspersoft.studio.field.label" value="hora_inicio"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="reserva"/>
+	</field>
+	<field name="hora_fin" class="java.sql.Time">
+		<property name="com.jaspersoft.studio.field.name" value="hora_fin"/>
+		<property name="com.jaspersoft.studio.field.label" value="hora_fin"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="reserva"/>
 	</field>
 	<field name="Nombre del Local" class="java.lang.String">
@@ -61,10 +75,10 @@
 		<property name="com.jaspersoft.studio.field.label" value="artista"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="reserva"/>
 	</field>
-	<field name="COLUMN_10" class="java.lang.String">
+	<field name="COLUMN_12" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="distribucion"/>
 		<property name="com.jaspersoft.studio.field.label" value="distribucion"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="reserva"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="locales"/>
 	</field>
 	<field name="Precio" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="Precio"/>
@@ -75,17 +89,17 @@
 		<property name="com.jaspersoft.studio.field.label" value="Equipo"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="equipo"/>
 	</field>
-	<field name="Cover" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="Cover"/>
-		<property name="com.jaspersoft.studio.field.label" value="Cover"/>
+	<field name="Capacidad" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="Capacidad"/>
+		<property name="com.jaspersoft.studio.field.label" value="Capacidad"/>
 	</field>
 	<field name="Total" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="Total"/>
 		<property name="com.jaspersoft.studio.field.label" value="Total"/>
 	</field>
-	<field name="Capacidad" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="Capacidad"/>
-		<property name="com.jaspersoft.studio.field.label" value="Capacidad"/>
+	<field name="Pago_impuestos" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="Pago_impuestos"/>
+		<property name="com.jaspersoft.studio.field.label" value="Pago_impuestos"/>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
@@ -140,7 +154,7 @@
 		<band height="30" splitType="Stretch"/>
 	</columnHeader>
 	<detail>
-		<band height="281" splitType="Stretch">
+		<band height="329" splitType="Stretch">
 			<staticText>
 				<reportElement stretchType="RelativeToTallestObject" x="30" y="4" width="110" height="16" uuid="45c2b636-ebd7-44a5-bc32-3ef491f0e5b0">
 					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
@@ -253,6 +267,70 @@
 				</reportElement>
 				<textFieldExpression><![CDATA[$F{Equipo}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="30" y="270" width="20" height="20" uuid="11645398-51be-4582-807f-a9556c8818ee">
+					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+					<paragraph tabStopWidth="50"/>
+				</textElement>
+				<text><![CDATA[Yo:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="50" y="270" width="110" height="20" uuid="edf9d74e-aa85-440e-8eb1-b8437dc380fd">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="8ad6c148-fc99-4316-a42f-8a116424fefc"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{Cliente}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="160" y="270" width="130" height="20" uuid="dcaddf46-5d5b-4acc-b4c9-79f09127f7d9">
+					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+					<paragraph tabStopWidth="50"/>
+				</textElement>
+				<text><![CDATA[solicito por la cantidad de:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="290" y="270" width="50" height="20" uuid="87a5f053-60a0-4d58-99d7-847a3f89326c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="5d5539dd-e07e-49cd-be62-7f14cd50bf49"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{Horas}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="350" y="270" width="45" height="20" uuid="d551f44b-cf05-4ed7-a8fa-1bc442d8eb82">
+					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+					<paragraph tabStopWidth="50"/>
+				</textElement>
+				<text><![CDATA[entre las:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="395" y="270" width="78" height="20" uuid="37bf897c-0582-475c-af65-818da2905652">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="929abc31-aac0-498a-be94-92527392df75"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{hora_inicio}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="30" y="290" width="30" height="20" uuid="c7059acf-54d9-4427-b696-bb1f57e9a392">
+					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+					<paragraph tabStopWidth="50"/>
+				</textElement>
+				<text><![CDATA[y las:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="60" y="290" width="68" height="20" uuid="6ab88b80-251f-4061-96e1-feb1d7aa1131">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6b1766f3-8d6a-4006-972e-39be5284ce32"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{hora_fin}]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 	<columnFooter>
@@ -274,20 +352,33 @@
 		</band>
 	</columnFooter>
 	<pageFooter>
-		<band height="54" splitType="Stretch">
-			<textField>
-				<reportElement x="479" y="12" width="50" height="30" uuid="d88e5789-de20-400c-bf28-6cdbe308a777"/>
-				<textFieldExpression><![CDATA[$F{Total}]]></textFieldExpression>
-			</textField>
+		<band height="104" splitType="Stretch">
 			<staticText>
-				<reportElement stretchType="RelativeToTallestObject" x="397" y="12" width="80" height="30" uuid="611656c2-d13e-4ae4-bbdb-493b88a1d011">
+				<reportElement stretchType="RelativeToTallestObject" x="400" y="10" width="80" height="20" uuid="611656c2-d13e-4ae4-bbdb-493b88a1d011">
 					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
 				</reportElement>
 				<textElement>
 					<paragraph tabStopWidth="50"/>
 				</textElement>
-				<text><![CDATA[Total a cancelar:]]></text>
+				<text><![CDATA[Precio alquiler]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="483" y="10" width="56" height="20" uuid="40df6ec7-bf68-4bcf-baf1-97acd1e21811"/>
+				<textFieldExpression><![CDATA[$F{Total}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToTallestObject" x="400" y="50" width="80" height="20" uuid="fcf67190-c000-4130-9826-3917e4a735ff">
+					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
+				</reportElement>
+				<textElement>
+					<paragraph tabStopWidth="50"/>
+				</textElement>
+				<text><![CDATA[Impuesto:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="483" y="50" width="77" height="30" uuid="ce219b4a-33c9-4edf-82da-cc01edba1c8a"/>
+				<textFieldExpression><![CDATA[$F{Pago_impuestos}]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageFooter>
 	<summary>

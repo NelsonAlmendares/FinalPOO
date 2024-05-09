@@ -48,13 +48,19 @@
                     </div>
                 </div>
                 <div class="form-group mt-3">
+                    <label for="distribucion">Ingrese la Distribucion:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="distribucion" id="distribucion" placeholder="Distribucion: " required>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 p-3">
+                <div class="form-group mt-3">
                     <label for="disponibilidad">Ingrese la Disponibilidad:</label>
                     <div class="input-group">
                         <input type="text" class="form-control" name="disponibilidad" id="disponibilidad" placeholder="Dispobibilidad: " required>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6 p-3">
                 <div class="form-group mt-3">
                     <label for="direccion">Ingrese la Direccion:</label>
                     <div class="input-group">
